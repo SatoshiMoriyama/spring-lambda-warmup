@@ -1,0 +1,35 @@
+# OS関連
+.DS_Store
+Thumbs.db
+
+# IDE/エディタ関連
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 依存関係
+/node_modules/
+/vendor/
+/.env
+
+# ビルド出力
+/dist/
+/build/
+*.log
+
+# コンパイル済みファイル
+*.class
+*.exe
+*.o
+*.pyc
+
+# ログファイル
+*.log
+npm-debug.log*
+
+# 一時ファイル
+tmp/
+temp/
+
+.aws-sam

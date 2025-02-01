@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Example Pet Store API written with SpringBoot with the aws-serverless-java-container library
+
+Globals:
+  Api:
+    EndpointConfiguration: REGIONAL
+
+Resources:
+  PetStoreFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.amazonaws.serverless.sample.springboot3.StreamLambdaHandler::handleRequest
+      Runtime: java17
+      CodeUri: .
+      Architectures:
+        - arm64
+      MemorySize: 2048
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MyTable
+      Timeout: 60
+      SnapStart:
+        ApplyOn: PublishedVersions
+      AutoPublishAlias: live
+      Tracing: Active
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: example
+      Events:
+        HttpApiEvent:
+          Type: HttpApi
+          Properties:
+            TimeoutInMillis: 20000
+            PayloadFormatVersion: '1.0'
+  MyTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: PetTable
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST  # オンデマンドキャパシティモード
+Outputs:
+  SpringBootPetStoreApi:
+    Description: URL for application
+    Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/pets'
+    Export:
+      Name: SpringBootPetStoreApi
